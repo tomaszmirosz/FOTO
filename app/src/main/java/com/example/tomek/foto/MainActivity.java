@@ -4,37 +4,27 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String CAM_IMAGE_NAME = "cam_image.bmp";
+    public static final String CAM_IMAGE_LOCATION = Environment.getExternalStorageDirectory()+"/camera_app";
     Button button;
     ImageView imageView;
     static final int CAM_REQUEST = 1;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,49 +42,21 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private File getFile() {
-        File folder = new File("sdcard/camera_app");
+        File folder = new File(CAM_IMAGE_LOCATION);
 
         if (!folder.exists()) {
             folder.mkdir();
         }
-        File image_file = new File(folder, "cam_image.bmp");
-        return image_file;
+        return new File(folder, CAM_IMAGE_NAME);
     }
-
-//
-//    private void changeBitmapColor(Bitmap sourceBitmap, ImageView image, int color) {
-//
-//        Bitmap resultBitmap = Bitmap.createBitmap(sourceBitmap, 0, 0,
-//                sourceBitmap.getWidth(), sourceBitmap.getHeight());
-//        Paint p = new Paint();
-//        ColorFilter filter = new LightingColorFilter(color, 1);
-//        p.setColorFilter(filter);
-//        image.setImageBitmap(resultBitmap);
-//
-//        Canvas canvas = new Canvas(resultBitmap);
-//        canvas.drawBitmap(resultBitmap, 0, 0, p);
-//    }
-
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String path = "sdcard/camera_app/cam_image.bmp";
-
-
-
-
-
-
-         //imageView.setImageDrawable(Drawable.createFromPath(path));
+        String path = CAM_IMAGE_LOCATION+"/"+CAM_IMAGE_NAME;
 
         ColorMatrix colorMatrix;
         Bitmap sourceBitmap = BitmapFactory.decodeFile(path);
@@ -112,13 +74,9 @@ public class MainActivity extends AppCompatActivity {
         Paint paint = new Paint();
         paint.setColorFilter(colorFilter);
 
-        Display display = getWindowManager().getDefaultDisplay();
+        Bitmap workingBitmap = Bitmap.createBitmap(sourceBitmap);
+        Bitmap resultBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
 
-
-        //Bitmap resultBitmap = Bitmap.createBitmap(sourceBitmap, 0, display.getHeight(), display.getWidth(), display.getHeight());
-        //Bitmap resultBitmap =  Bitmap.createBitmap(sourceBitmap, display.getWidth() , display.getHeight()  , display.getWidth(), display.getHeight());
-        //Bitmap resultBitmap =  Bitmap.createBitmap(sourceBitmap, sourceBitmap.getHeight(), sourceBitmap.getWidth(),sourceBitmap.getWidth(),sourceBitmap.getHeight());
-        Bitmap resultBitmap =  Bitmap.createBitmap(sourceBitmap, display.getWidth(), display.getHeight(), display.getWidth()*2, display.getHeight()*2);
         imageView.setImageBitmap(resultBitmap);
 
         Canvas canvas = new Canvas(resultBitmap);
